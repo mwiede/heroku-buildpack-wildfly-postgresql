@@ -1,6 +1,6 @@
-# heroku-buildpack-wildfly-mysql
+# heroku-buildpack-wildfly-postgresql
 
-This is a [Heroku Buildpack](https://devcenter.heroku.com/articles/buildpacks) for adding Mysql Driver to [Wildfly AS](http://wildfly.org) as a module.
+This is a [Heroku Buildpack](https://devcenter.heroku.com/articles/buildpacks) for adding postgresql Driver to [Wildfly AS](http://wildfly.org) as a module.
 
 ## Usage
 
@@ -10,7 +10,7 @@ This is a [Heroku Buildpack](https://devcenter.heroku.com/articles/buildpacks) f
 $ heroku buildpacks:clear
 $ heroku buildpacks:add heroku/java
 $ heroku buildpacks:add https://github.com/mwiede/heroku-buildpack-wildfly
-$ heroku buildpacks:add https://github.com/mwiede/heroku-buildpack-wildfly-mysql
+$ heroku buildpacks:add https://github.com/mwiede/heroku-buildpack-wildfly-postgresql
 ```
 
 2. Then deploy your Maven project
