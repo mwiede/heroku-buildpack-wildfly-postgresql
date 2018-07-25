@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+# versions
+POSTGRESQL_VERSION="42.2.1"
+POSTGRESQL_SHA1="b7f61848ac43ae9fa6e38935bfd75628b7fc9086"
+
+BP_DIR=$(cd $(dirname $0)/..; pwd) # absolute path
+BIN_DIR=$BP_DIR/bin
+
+# parse args
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+cd $BUILD_DIR
+
+JBOSS_HOME=$BUILD_DIR/.jboss/wildfly-10.1.0.Final
+
+: "${JBOSS_HOME:?You need to install Wildfly first. JBOSS_HOME environment variable not found.}"
+
+echo "-----> Downloading postgresql connector ${POSTGRESQL_VERSION}... "
+curl -O http://central.maven.org/maven2/org.postgresql/postgresql/${POSTGRESQL_VERSION}/postgresql-${POSTGRESQL_VERSION}.jar          
+echo "-----> downloaded"
+sha1sum postgresql-${POSTGRESQL_VERSION}.jar | grep $POSTGRESQL_SHA1 > /dev/null 2>&1
+echo "-----> verified"
+
+# 1) startup
+echo "-----> Starting WildFly ... "
+$JBOSS_HOME/bin/standalone.sh --admin-only &
+
+WILDFLY_RUNNING=1
+
+until [ $WILDFLY_RUNNING -eq 0 ]; do
+	$JBOSS_HOME/bin/jboss-cli.sh --connect --command=":read-attribute(name=server-state)"
+	WILDFLY_RUNNING=$?
+	sleep 3
+done	
+
+# 2) create postgresql module
+echo "-----> create postgresql module ... "
+$JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=org.postgresql --resources=$BUILD_DIR/postgresql-$POSTGRESQL_VERSION.jar --dependencies=javax.api,javax.transaction.api"
+
+# 3) install driver
+echo "-----> install JDBC driver ... "
+$JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql.Driver,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)"
+
+$JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources:installed-drivers-list"
+
+# 4) shutdown
+echo "-----> shutdown WildFly ... "
+$JBOSS_HOME/bin/jboss-cli.sh --connect command=:shutdown
+
+echo "-----> done"
