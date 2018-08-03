@@ -20,7 +20,7 @@ JBOSS_HOME=$BUILD_DIR/.jboss/wildfly-10.1.0.Final
 : "${JBOSS_HOME:?You need to install Wildfly first. JBOSS_HOME environment variable not found.}"
 
 echo "-----> Downloading postgresql connector from http://central.maven.org/maven2/org.postgresql/postgresql/${POSTGRESQL_VERSION}/postgresql-${POSTGRESQL_VERSION}.jar ... "
-curl -O http://central.maven.org/maven2/org.postgresql/postgresql/${POSTGRESQL_VERSION}/postgresql-${POSTGRESQL_VERSION}.jar          
+curl -O http://central.maven.org/maven2/org/postgresql/postgresql/${POSTGRESQL_VERSION}/postgresql-${POSTGRESQL_VERSION}.jar          
 echo "-----> downloaded"
 sha1sum postgresql-${POSTGRESQL_VERSION}.jar | grep $POSTGRESQL_SHA1 > /dev/null 2>&1
 echo "-----> verified"
