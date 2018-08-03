@@ -19,7 +19,7 @@ JBOSS_HOME=$BUILD_DIR/.jboss/wildfly-10.1.0.Final
 
 : "${JBOSS_HOME:?You need to install Wildfly first. JBOSS_HOME environment variable not found.}"
 
-echo "-----> Downloading postgresql connector ${POSTGRESQL_VERSION}... "
+echo "-----> Downloading postgresql connector from http://central.maven.org/maven2/org.postgresql/postgresql/${POSTGRESQL_VERSION}/postgresql-${POSTGRESQL_VERSION}.jar ... "
 curl -O http://central.maven.org/maven2/org.postgresql/postgresql/${POSTGRESQL_VERSION}/postgresql-${POSTGRESQL_VERSION}.jar          
 echo "-----> downloaded"
 sha1sum postgresql-${POSTGRESQL_VERSION}.jar | grep $POSTGRESQL_SHA1 > /dev/null 2>&1
@@ -43,7 +43,7 @@ $JBOSS_HOME/bin/jboss-cli.sh --connect --command="module add --name=org.postgres
 
 # 3) install driver
 echo "-----> install JDBC driver ... "
-$JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql.Driver,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)"
+$JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)"
 
 $JBOSS_HOME/bin/jboss-cli.sh --connect --command="/subsystem=datasources:installed-drivers-list"
 
